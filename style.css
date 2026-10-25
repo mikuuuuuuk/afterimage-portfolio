@@ -166,3 +166,26 @@ button.is-pressed{transform:scale(.965);transition-duration:.08s}.chapter-step,.
   .cosmic-world,.home-world{touch-action:none;contain:layout paint}
   .signature-letter{transition:color .4s}
 }
+/* Portrait composition: copy above, tactile character below, signatures outside the stage. */
+.release-update{position:fixed;z-index:70;bottom:28px;left:50%;transform:translateX(-50%);padding:13px 18px;border:1px solid #ffffff60;border-radius:30px;background:#18252ded;color:#fff;font-size:8px;white-space:nowrap}
+@media(max-width:760px){
+  .hud{height:58px;padding:0 5vw}.hud-right{gap:7px}.chapter-count{font-size:6px;max-width:105px}.progress-track{top:57px}
+  .threshold .scene-meta{top:76px;font-size:6px;left:6vw;right:6vw}
+  .threshold .threshold-copy{position:absolute;top:106px;left:7vw;margin:0;align-self:auto;max-width:86vw}
+  .threshold .threshold-copy .kicker{font-size:6px;letter-spacing:.12em;margin:0 0 12px}
+  .threshold h1{font-size:10.2vw;line-height:1.03;margin:0 0 13px;letter-spacing:-.065em}
+  .threshold-intro{font-size:9px;line-height:1.65;margin:0 0 12px;max-width:80vw}
+  .threshold .enter-button{backdrop-filter:none;-webkit-backdrop-filter:none;background:none;gap:10px}
+  .threshold .enter-button .mono{font-size:7px}.threshold .enter-ring{width:35px;height:35px}.threshold .enter-ring .ui-arrow{width:17px;height:17px}
+  .threshold .signature-home{bottom:43px;right:6vw;max-width:42vw;opacity:.8}.threshold .signature-name{font-size:14px;margin:6px 0}.threshold .signature-eyebrow{font-size:5px}.threshold .signature-rule{opacity:.5}
+  .threshold .home-story{bottom:46px;left:6vw;max-width:40%;font-size:5px}
+  .threshold .threshold-foot{bottom:22px;font-size:5px;left:6vw;right:6vw}.threshold .threshold-foot span:last-child{display:none}
+  .threshold-wash{background:linear-gradient(180deg,#0a1724a6,transparent 52%)}
+  .scene-topline{top:77px;font-size:6px;gap:14px}.scene-topline span:last-child{text-align:right;max-width:58%;line-height:1.6}
+  .lens-scene .lens-copy{top:114px;max-width:78vw}.lens-scene .lens-copy .kicker{font-size:6px;margin-bottom:15px}.lens-scene .lens-copy h2{font-size:10vw}.lens-scene .scene-description{margin-top:15px;font-size:9px;max-width:70vw}
+  .scene-aside{bottom:27px;font-size:5px}.lens-scene .next-scene{bottom:58px;font-size:7px;padding:12px 15px;border-radius:28px}
+}
+@media(max-width:760px) and (max-height:660px){
+  .threshold .threshold-copy{top:93px}.threshold h1{font-size:8.8vw}.threshold-intro{display:none}.threshold .threshold-copy .kicker{margin-bottom:9px}.threshold .signature-home{bottom:35px}.threshold .home-story{display:none}
+  .lens-scene .lens-copy{top:103px}.lens-scene .scene-description{display:none}
+}
