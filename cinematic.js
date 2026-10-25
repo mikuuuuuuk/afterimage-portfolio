@@ -4,6 +4,7 @@
   const clamp = x => Math.max(0, Math.min(1, x));
   const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
   const TAU = Math.PI * 2;
+  const coarse=matchMedia('(pointer:coarse)').matches;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const palettes = ['#b5e4ec', '#86e6da', '#bcb4ff', '#edc7a5', '#b9d6ae', '#f1aecf', '#9ee8d8', '#a8c7ff', '#e2d8c8'];
   const ids = ['threshold','fluidScene','gravityScene','revealScene','clothScene','orbitScene','fieldScene','lensScene','epilogue'];
@@ -69,7 +70,7 @@
     }
     last={x:e.clientX,y:e.clientY,t:now};
   },{passive:true});
-  addEventListener('pointerdown',e=>{held=true;emit(e.clientX,e.clientY,0,0,54,true);},{passive:true});
+  addEventListener('pointerdown',e=>{if(e.pointerType==='touch')return;held=true;emit(e.clientX,e.clientY,0,0,54,true);},{passive:true});
   const release=()=>{held=false;};
   addEventListener('pointerup',release);addEventListener('pointercancel',release);
   addEventListener('blur',()=>{held=false;last=null;});
@@ -237,7 +238,7 @@
       if(busy)return false;busy=true;transitionProgress=0;slowFrames=0;
       const theme=themes[index]||themes[0];
       const resizeBuffer=()=>{
-        const ratio=Math.max(1,Math.min(devicePixelRatio||1,1.5,Math.sqrt(2000000/(innerWidth*innerHeight))));
+        const ratio=Math.max(1,Math.min(devicePixelRatio||1,coarse?1.25:1.5,Math.sqrt((coarse?950000:2000000)/(innerWidth*innerHeight))));
         const w=Math.round(innerWidth*ratio),h=Math.round(innerHeight*ratio);
         if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
       };

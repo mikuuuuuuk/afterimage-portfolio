@@ -1,3 +1,4 @@
+const coarseDevice=matchMedia('(pointer:coarse)').matches;
 const journey = document.querySelector('#journey');
 const scenes = [...document.querySelectorAll('.scene')];
 const cursor = document.querySelector('.custom-cursor');
@@ -65,8 +66,8 @@ function bindCanvas(canvas) {
   const resize = () => {
     const rect = canvas.getBoundingClientRect();
     width = Math.max(1, rect.width); height = Math.max(1, rect.height);
-    dpr = Math.min(devicePixelRatio || 1, 1.7);
-    canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
+    dpr = Math.min(devicePixelRatio || 1, coarseDevice?1.25:1.7);
+    const bw=Math.round(width*dpr),bh=Math.round(height*dpr);if(canvas.width===bw&&canvas.height===bh)return;canvas.width=bw;canvas.height=bh;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
   new ResizeObserver(resize).observe(canvas.parentElement);
@@ -156,7 +157,7 @@ function resizeGravity() {
   const oldW=gravityWidth,oldH=gravityHeight;
   if(Math.round(rect.width)===Math.round(oldW)&&Math.round(rect.height)===Math.round(oldH))return;
   gravityWidth=Math.max(1,rect.width);gravityHeight=Math.max(1,rect.height);
-  gravityDpr=Math.min(devicePixelRatio||1,1.55);
+  gravityDpr=Math.min(devicePixelRatio||1,coarseDevice?1.25:1.55);
   gravityCanvas.width=Math.round(gravityWidth*gravityDpr);gravityCanvas.height=Math.round(gravityHeight*gravityDpr);
   if(gl)gl.viewport(0,0,gravityCanvas.width,gravityCanvas.height);
   rebuildFloor();
@@ -271,7 +272,7 @@ function compileGL(context,vertexSource,fragmentSource) {
   if(!context.getProgramParameter(program,context.LINK_STATUS))throw new Error(context.getProgramInfoLog(program));
   return program;
 }
-function sphereMesh(lat=56,lon=84) {
+function sphereMesh(lat=coarseDevice?32:56,lon=coarseDevice?48:84) {
   const vertices=[],indices=[];
   for(let y=0;y<=lat;y++){
     const phi=y/lat*Math.PI;
@@ -454,7 +455,7 @@ let orbitWidth=1,orbitHeight=1,orbitDpr=1;
 const orbitState={rx:-.16,ry:0,drag:false,lastX:0,lastY:0,moved:0,pulse:0,bloom:.9,targetBloom:.9};
 function resizeOrbit(){
   const r=orbitCanvas.getBoundingClientRect();orbitWidth=Math.max(1,r.width);orbitHeight=Math.max(1,r.height);
-  orbitDpr=Math.min(devicePixelRatio||1,1.5);orbitCanvas.width=Math.round(orbitWidth*orbitDpr);orbitCanvas.height=Math.round(orbitHeight*orbitDpr);
+  orbitDpr=Math.min(devicePixelRatio||1,coarseDevice?1.25:1.5);const bw=Math.round(orbitWidth*orbitDpr),bh=Math.round(orbitHeight*orbitDpr);if(orbitCanvas.width===bw&&orbitCanvas.height===bh)return;orbitCanvas.width=bw;orbitCanvas.height=bh;
   if(orbitGL)orbitGL.viewport(0,0,orbitCanvas.width,orbitCanvas.height);
 }
 new ResizeObserver(resizeOrbit).observe(orbitCanvas.parentElement);resizeOrbit();
@@ -508,7 +509,7 @@ if(orbitGL){
       const time=performance.now(),rx=orbitState.rx+Math.sin(time*.00018)*.018,ry=orbitState.ry+time*.000018,ox=orbitWidth*.69,oy=orbitHeight*.55,scale=Math.min(1,orbitWidth/920),vertices=[];
       orbitState.bloom+=(orbitState.targetBloom-orbitState.bloom)*.055;
       petals.forEach((petal)=>{
-        const rows=17,cols=9,grid=[],angle=petal.angle+ry*.42,ca=Math.cos(angle),sa=Math.sin(angle),bloom=orbitState.bloom;
+        const rows=coarseDevice?11:17,cols=coarseDevice?7:9,grid=[],angle=petal.angle+ry*.42,ca=Math.cos(angle),sa=Math.sin(angle),bloom=orbitState.bloom;
         for(let r=0;r<rows;r++){
           const u=r/(rows-1);grid[r]=[];
           for(let c=0;c<cols;c++){
@@ -549,7 +550,7 @@ drawOrbit();
 
 const fieldCanvas=document.querySelector('#fieldCanvas'),field=bindCanvas(fieldCanvas),fieldScene=document.querySelector('#fieldScene');
 const fieldPointer={x:0,y:0,down:false};
-const motes=Array.from({length:1800},()=>({x:Math.random()*field.width,y:Math.random()*field.height,vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6,phase:Math.random()*6.28}));
+const motes=Array.from({length:coarseDevice?1000:1800},()=>({x:Math.random()*field.width,y:Math.random()*field.height,vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6,phase:Math.random()*6.28}));
 function fieldPoint(event){const r=fieldCanvas.getBoundingClientRect();return{x:event.clientX-r.left,y:event.clientY-r.top};}
 fieldCanvas.addEventListener('pointermove',event=>{if(activeScene===fieldScene)Object.assign(fieldPointer,fieldPoint(event));});
 fieldCanvas.addEventListener('pointerdown',event=>{if(activeScene===fieldScene){fieldPointer.down=true;fieldCanvas.setPointerCapture(event.pointerId);}});fieldCanvas.addEventListener('pointerup',()=>fieldPointer.down=false);fieldCanvas.addEventListener('pointercancel',()=>fieldPointer.down=false);
@@ -594,7 +595,7 @@ drawField(0);
 // A swept, beveled 3D horseshoe: the field remains visible beneath its glassy enamel.
 const magnetCanvas=document.querySelector('#magnetCanvas'),magnetGL=magnetCanvas.getContext('webgl',{alpha:true,antialias:true,depth:true});
 let magnetW=1,magnetH=1,magnetDpr=1,magnetDraw=()=>{};
-function resizeMagnet(){const r=magnetCanvas.getBoundingClientRect();magnetW=Math.max(1,r.width);magnetH=Math.max(1,r.height);magnetDpr=Math.min(devicePixelRatio||1,1.5);magnetCanvas.width=Math.round(magnetW*magnetDpr);magnetCanvas.height=Math.round(magnetH*magnetDpr);if(magnetGL)magnetGL.viewport(0,0,magnetCanvas.width,magnetCanvas.height);}
+function resizeMagnet(){const r=magnetCanvas.getBoundingClientRect();magnetW=Math.max(1,r.width);magnetH=Math.max(1,r.height);magnetDpr=Math.min(devicePixelRatio||1,coarseDevice?1.25:1.5);const bw=Math.round(magnetW*magnetDpr),bh=Math.round(magnetH*magnetDpr);if(magnetCanvas.width===bw&&magnetCanvas.height===bh)return;magnetCanvas.width=bw;magnetCanvas.height=bh;if(magnetGL)magnetGL.viewport(0,0,magnetCanvas.width,magnetCanvas.height);}
 new ResizeObserver(resizeMagnet).observe(magnetCanvas.parentElement);resizeMagnet();
 function magnetMesh(){
   const path=[];for(let i=0;i<=12;i++)path.push([-90,-104+i*11,0]);
@@ -648,6 +649,7 @@ addEventListener('pointermove',event=>{
     document.documentElement.classList.add('has-precision-pointer');
     cursor.style.setProperty('--cx',`${pointer.x}px`);cursor.style.setProperty('--cy',`${pointer.y}px`);cursor.classList.add('is-visible');
   }else cursor.classList.remove('is-visible','is-down','is-hover');
+  if(event.pointerType==='touch')return;
   const room=document.querySelector('.world-architecture');room.style.setProperty('--room-x',`${((pointer.x/innerWidth)-.5)*22}px`);room.style.setProperty('--room-y',`${((pointer.y/innerHeight)-.5)*14}px`);
   const touch=document.querySelector('.touch-word'),touchRect=touch.getBoundingClientRect();touch.style.setProperty('--touch-x',`${event.clientX-touchRect.left}px`);touch.style.setProperty('--touch-y',`${event.clientY-touchRect.top}px`);
 });

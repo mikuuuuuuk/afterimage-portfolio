@@ -9,14 +9,14 @@
   <meta name="description" content="AFTERIMAGE by Pei Ling Hsu. Seven interactive worlds shaped by touch, light and motion.">
   <link rel="preload" href="assets/models/lumi-sculpt.glb" as="fetch" crossorigin="anonymous">
   <link rel="stylesheet" href="fonts.css">
-  <link rel="stylesheet" href="style.css?v=36c3af337e85">
+  <link rel="stylesheet" href="style.css?v=041dc27707f1">
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
   <header class="hud">
     <a class="sigil" href="#threshold" aria-label="Return to beginning">A<span>/</span>I</a>
     <span class="hud-title mono">AFTERIMAGE <i>BY</i> <span class="hud-author">PEI LING HSU</span></span>
-    <div class="hud-right"><span class="chapter-count mono" id="chapterCount">PROLOGUE&nbsp; / &nbsp;07</span><button class="chapter-step" id="chapterPrev" aria-label="Previous chapter">←</button><button class="chapter-step" id="chapterNext" aria-label="Next chapter">→</button><button class="sound-toggle mono" id="soundToggle" aria-pressed="true">SOUND&nbsp; ON</button><span class="hud-dot"></span></div>
+    <div class="hud-right"><span class="chapter-count mono" id="chapterCount">PROLOGUE&nbsp; / &nbsp;07</span><button class="chapter-step" id="chapterPrev" aria-label="Previous chapter"><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 12H4m6-6-6 6 6 6"/></svg></button><button class="chapter-step" id="chapterNext" aria-label="Next chapter"><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button><button class="sound-toggle mono" id="soundToggle" aria-pressed="true">SOUND&nbsp; ON</button><span class="hud-dot"></span></div>
   </header>
   <div class="progress-track"><span id="progress"></span></div>
 
@@ -34,7 +34,7 @@
         <p class="kicker mono"><span class="live-mark"></span> A SMALL CREATURE. A GREAT UNKNOWN.</p>
         <h1>A world shaped<br>by your <span class="touch-word"><em>touch.</em><i aria-hidden="true">touch.</i></span></h1>
         <p class="threshold-intro">A quiet room. A curious little soul.<br>Follow the light into seven unknown worlds.</p>
-        <button class="enter-button" id="enterButton"><span class="enter-ring"><b>↗</b></span><span class="mono">FOLLOW THE LIGHT</span></button>
+        <button class="enter-button" id="enterButton"><span class="enter-ring"><b><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12"/></svg></b></span><span class="mono">FOLLOW THE LIGHT</span></button>
       </div>
       <div class="creator-signature signature-home" tabindex="0" aria-label="A world by Pei Ling Hsu">
         <span class="signature-eyebrow mono"><i></i> A WORLD BY</span>
@@ -42,7 +42,7 @@
         <span class="signature-rule" aria-hidden="true"></span>
         <span class="signature-caption mono">TOUCH / LIGHT / MOTION</span>
       </div>
-      <div class="threshold-foot mono"><span>DRAG AN EAR · RELEASE TO FEEL THE SPRING</span><span>CLICK TO ENTER&nbsp; ↓</span></div>
+      <div class="threshold-foot mono"><span>DRAG AN EAR · RELEASE TO FEEL THE SPRING</span><span>CLICK TO ENTER&nbsp; <svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></span></div>
     </section>
 
     <section class="scene fluid-scene" id="fluidScene" data-chapter="I — THE TRACE" aria-label="Fluid field">
@@ -56,7 +56,7 @@
         <p class="scene-description">Hold the field. Pull it into a current.<br>Let go and watch the memory dissolve.</p>
       </div>
       <div class="scene-aside mono"><span>FIELD STUDY / 001</span><span>YOUR CURSOR IS THE FORCE</span></div>
-      <button class="next-scene mono" data-next="gravityScene">FOLLOW THE CURRENT <b>→</b></button>
+      <button class="next-scene mono" data-next="gravityScene">FOLLOW THE CURRENT <b><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></b></button>
     </section>
 
     <section class="scene gravity-scene" id="gravityScene" data-chapter="II — THE BODY" aria-label="Three dimensional gravity field">
@@ -69,7 +69,7 @@
         <p class="scene-description">Pull a planet up, across, or through depth.<br>Release it into the pile. Watch the stack settle.</p>
       </div>
       <div class="collision-readout mono"><span>3D GRAVITY / FLOOR + STACK</span><b id="collisionCount">0 IMPACTS</b></div>
-      <button class="next-scene mono" data-next="revealScene">STEP INTO THE ARCHIVE <b>→</b></button>
+      <button class="next-scene mono" data-next="revealScene">STEP INTO THE ARCHIVE <b><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></b></button>
     </section>
 
     <section class="scene reveal-scene" id="revealScene" data-chapter="III — THE OBJECT" aria-label="Layered exhibit reveal">
@@ -89,11 +89,11 @@
           <p class="kicker mono">A STUDY IN REVEAL</p>
           <h2>Look closer.<br><em>Then closer.</em></h2>
           <p>Some things only appear after the surface moves.</p>
-          <button id="peelButton" class="peel-button mono"><span>UNVEIL LAYER 01</span><b>↗</b></button>
+          <button id="peelButton" class="peel-button mono"><span>UNVEIL LAYER 01</span><b><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12"/></svg></b></button>
           <div class="layer-counter mono" id="layerCounter">LAYER 00 / 03</div>
         </div>
       </div>
-      <button class="next-scene mono" data-next="clothScene">LEAVE SOMETHING BEHIND <b>→</b></button>
+      <button class="next-scene mono" data-next="clothScene">LEAVE SOMETHING BEHIND <b><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></b></button>
     </section>
 
     <section class="scene cloth-scene" id="clothScene" data-chapter="IV — THE HAND" aria-label="Cloth simulation">
@@ -106,7 +106,7 @@
         <p class="scene-description">Take hold anywhere.<br>The fabric will follow your hand.</p>
       </div>
       <div class="cloth-note mono">TENSION / MEMORY / RETURN</div>
-      <button class="next-scene mono" data-next="orbitScene">ENTER THE ORBIT ROOM <b>→</b></button>
+      <button class="next-scene mono" data-next="orbitScene">ENTER THE ORBIT ROOM <b><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></b></button>
     </section>
 
     <section class="scene orbit-scene" id="orbitScene" data-chapter="V — THE BLOOM" aria-label="A modeled three dimensional flower">
@@ -119,7 +119,7 @@
         <p class="scene-description">Turn the bloom in your hand.<br>Click to open and close its petals.</p>
       </div>
       <div class="scene-aside mono"><span>PETALS / 036</span><span>THE MODEL TURNS WITH YOU</span></div>
-      <button class="next-scene mono" data-next="fieldScene">ENTER THE MAGNETIC ROOM <b>→</b></button>
+      <button class="next-scene mono" data-next="fieldScene">ENTER THE MAGNETIC ROOM <b><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></b></button>
     </section>
 
     <section class="scene field-scene" id="fieldScene" data-chapter="VI — THE FIELD" aria-label="A magnetic particle field">
@@ -134,7 +134,7 @@
         <p class="scene-description">Watch the filings gather around the poles.<br>Move your hand to bend the field.</p>
       </div>
       <div class="scene-aside mono"><span>NORTH / SOUTH · ATTRACTION / REPULSION</span><span>THE FIELD ANSWERS YOUR HAND</span></div>
-      <button class="next-scene mono" data-next="lensScene">PASS THROUGH THE GLASS <b>→</b></button>
+      <button class="next-scene mono" data-next="lensScene">PASS THROUGH THE GLASS <b><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></b></button>
     </section>
 
     <section class="scene lens-scene" id="lensScene" data-chapter="VII — THE COSMIC SEA" aria-label="A pointer-controlled spiral galaxy">
@@ -144,9 +144,9 @@
         <h2>Where the<br><em>dark sings.</em></h2>
         <p class="scene-description">Move the halo. Look into another universe.<br>Hold to drift deeper into the stars.</p>
       </div>
-      <div class="scene-topline mono"><span>07 / THE COSMIC SEA</span><span>MOVE TO EXPLORE · HOLD TO LOOK DEEPER</span></div>
+      <div class="scene-topline mono"><span>07 / THE COSMIC SEA</span><span>DRAG TO EXPLORE · HOLD TO EXPAND · RELEASE TO SCATTER</span></div>
       <div class="scene-aside mono"><span>SPIRAL ARM / 04</span><span>A WINDOW INTO THE INFINITE</span></div>
-      <button class="next-scene mono" data-next="epilogue">DRIFT BEYOND THE EDGE <b>→</b></button>
+      <button class="next-scene mono" data-next="epilogue">DRIFT BEYOND THE EDGE <b><svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></b></button>
     </section>
 
     <section class="scene epilogue" id="epilogue" data-chapter="EPILOGUE" aria-label="End of experience">
@@ -160,16 +160,16 @@
           <p class="signature-name" aria-label="Pei Ling Hsu">PEI LING HSU</p>
           <span class="signature-rule" aria-hidden="true"></span>
         </div>
-        <button class="restart-button mono" id="restartButton">RETURN TO THE THRESHOLD&nbsp; ↗</button>
+        <button class="restart-button mono" id="restartButton">RETURN TO THE THRESHOLD&nbsp; <svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12"/></svg></button>
       </div>
       <div class="epilogue-foot mono"><span>PEI LING HSU / AFTERIMAGE / 2026</span><span>THANK YOU FOR LEAVING A TRACE</span></div>
     </section>
   </main>
 
-  <a class="music-credit mono" href="music-credits.html" target="_blank" rel="noopener">MUSIC · MEANWHILE / SCOTT BUCKLEY ↗</a>
+  <a class="music-credit mono" href="music-credits.html" target="_blank" rel="noopener">MUSIC · MEANWHILE / SCOTT BUCKLEY <svg class="ui-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
   <div class="custom-cursor" aria-hidden="true"><i></i><span>DRAG</span></div>
-  <script src="cinematic.js?v=c46e8efecd67"></script>
-  <script src="app.js?v=ecfa50fada46"></script>
-  <script src="assets/home-world.js?v=6bb4ac7577a6" defer></script>
+  <script src="cinematic.js?v=36fdd700c9f8"></script>
+  <script src="app.js?v=c9c0377e752d"></script>
+  <script src="assets/home-world.js?v=6558260ca27d" defer></script>
 </body>
 </html>
