@@ -138,7 +138,7 @@
   let gl=null,program=null,uniform={},mesh={},busy=false,attributes={},transitionProgress=0,quality=1,slowFrames=0;
   function initGL(){
     try {
-      gl=canvas.getContext('webgl',{alpha:true,antialias:false,depth:true,powerPreference:'high-performance'});
+      gl=canvas.getContext('webgl',{alpha:true,antialias:true,depth:true,powerPreference:'high-performance'});
       if(!gl)return;
       const shader=(type,src)=>{const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;};
       program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vertex));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fragment));gl.linkProgram(program);
@@ -237,7 +237,7 @@
       if(busy)return false;busy=true;transitionProgress=0;slowFrames=0;
       const theme=themes[index]||themes[0];
       const resizeBuffer=()=>{
-        const ratio=Math.min(devicePixelRatio||1,1.15,Math.sqrt(900000/(innerWidth*innerHeight)))*quality;
+        const ratio=Math.max(1,Math.min(devicePixelRatio||1,1.5,Math.sqrt(2000000/(innerWidth*innerHeight))));
         const w=Math.round(innerWidth*ratio),h=Math.round(innerHeight*ratio);
         if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
       };
@@ -253,7 +253,7 @@
         // One swap and one fully covered paint must occur even after a long frame.
         elapsed+=Math.min(100,delta);const p=clamp(elapsed/duration);transitionProgress=p;
         if(delta>27)slowFrames++;else slowFrames=Math.max(0,slowFrames-1);
-        if(slowFrames>=8&&quality>.6){quality=Math.max(.6,quality-.15);slowFrames=0;resizeBuffer();}
+        
         // Opaque by 40%, swap at 45%, reveal after 67%. One timeline owns all changes.
         const cover=smooth(.08,.4,p)*(1-smooth(.67,1,p));veil.style.opacity=String(cover);
         caption.style.opacity=String(smooth(.26,.4,p)*(1-smooth(.62,.78,p)));

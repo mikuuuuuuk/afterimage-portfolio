@@ -5,7 +5,7 @@ const chapterCount = document.querySelector('#chapterCount');
 const progress = document.querySelector('#progress');
 let activeScene = scenes[0];
 let pointer = { x: innerWidth / 2, y: innerHeight / 2, px: innerWidth / 2, py: innerHeight / 2, down: false };
-let audioContext = null, audioMaster = null, soundEnabled = false;
+let audioContext = null, audioMaster = null, soundEnabled = true;
 let soundtrack = null, soundRequest = 0;
 
 function prepareAudio() {
@@ -21,24 +21,20 @@ function prepareAudio() {
   musicSource.connect(musicGain); musicGain.connect(audioMaster);
   return true;
 }
-async function toggleSound() {
-  if(!prepareAudio())return;
-  const request=++soundRequest;
-  soundEnabled=!soundEnabled;
-  const button=document.querySelector('#soundToggle');
-  button.textContent=soundEnabled?'SOUND  ON':'SOUND  OFF';
-  button.setAttribute('aria-pressed',String(soundEnabled));
-  audioMaster.gain.setTargetAtTime(soundEnabled ? .64 : 0,audioContext.currentTime,.12);
-  if(soundEnabled){
-    try{await Promise.all([audioContext.resume(),soundtrack.play()]);button.title='Meanwhile — Scott Buckley / CC BY 4.0';}
-    catch(error){
-      if(request!==soundRequest)return;
-      soundEnabled=false;audioMaster.gain.setTargetAtTime(0,audioContext.currentTime,.1);
-      button.textContent='SOUND  OFF';button.setAttribute('aria-pressed','false');button.title='Music could not play. Tap to retry.';
-      console.warn('Background music could not start.',error.name);
-    }
-  }else window.setTimeout(()=>{if(!soundEnabled)soundtrack.pause();},450);
+let musicPlaying=false,musicStarting=false;
+const soundButton=document.querySelector('#soundToggle');
+function soundUI(){soundButton.textContent=soundEnabled?'SOUND  ON':'SOUND  OFF';soundButton.setAttribute('aria-pressed',String(soundEnabled));soundButton.title=soundEnabled?'Music starts with your first touch — Meanwhile / Scott Buckley':'Enable music';}
+async function startMusic(){
+  if(!soundEnabled||musicPlaying||musicStarting||!prepareAudio())return;
+  const request=++soundRequest;musicStarting=true;
+  try{await Promise.all([audioContext.resume(),soundtrack.play()]);if(request!==soundRequest||!soundEnabled)return;musicPlaying=true;audioMaster.gain.setTargetAtTime(.64,audioContext.currentTime,.35);soundButton.title='Meanwhile — Scott Buckley / CC BY 4.0';}
+  catch(error){if(error.name!=='NotAllowedError')soundButton.title='Tap SOUND to retry music';}
+  finally{musicStarting=false;}
 }
+function toggleSound(){soundEnabled=!soundEnabled;soundUI();if(soundEnabled)startMusic();else{++soundRequest;musicPlaying=false;if(audioContext){audioMaster.gain.setTargetAtTime(0,audioContext.currentTime,.12);setTimeout(()=>{if(!soundEnabled)soundtrack.pause();},450);}}}
+soundUI();
+addEventListener('pointerdown',event=>{if(!event.target.closest('#soundToggle'))startMusic();});
+addEventListener('keydown',event=>{if(['Enter',' ','ArrowRight','PageDown'].includes(event.key)&&!event.target.closest('#soundToggle'))startMusic();});
 function playImpactSfx(energy=.5) {
   if(!soundEnabled||!audioContext)return;
   const now=audioContext.currentTime,osc=audioContext.createOscillator(),gain=audioContext.createGain();
@@ -535,7 +531,7 @@ drawOrbit();
 
 const fieldCanvas=document.querySelector('#fieldCanvas'),field=bindCanvas(fieldCanvas),fieldScene=document.querySelector('#fieldScene');
 const fieldPointer={x:0,y:0,down:false};
-const motes=Array.from({length:420},()=>({x:Math.random()*field.width,y:Math.random()*field.height,vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6,phase:Math.random()*6.28}));
+const motes=Array.from({length:1800},()=>({x:Math.random()*field.width,y:Math.random()*field.height,vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6,phase:Math.random()*6.28}));
 function fieldPoint(event){const r=fieldCanvas.getBoundingClientRect();return{x:event.clientX-r.left,y:event.clientY-r.top};}
 fieldCanvas.addEventListener('pointermove',event=>{if(activeScene===fieldScene)Object.assign(fieldPointer,fieldPoint(event));});
 fieldCanvas.addEventListener('pointerdown',event=>{if(activeScene===fieldScene){fieldPointer.down=true;fieldCanvas.setPointerCapture(event.pointerId);}});fieldCanvas.addEventListener('pointerup',()=>fieldPointer.down=false);fieldCanvas.addEventListener('pointercancel',()=>fieldPointer.down=false);
@@ -546,7 +542,7 @@ function drawField(time){
   if(activeScene===fieldScene){
     const scale=Math.min(1,width/1000),mx=width*.7,my=height*.55,poleX=90*scale,poleY=104*scale;
     ctx.save();ctx.globalCompositeOperation='lighter';
-    for(let i=0;i<9;i++){
+    for(let i=0;i<14;i++){
       const spread=(i+1)*22*scale,wave=Math.sin(time*.0007+i*.8)*7*scale;
       ctx.beginPath();ctx.moveTo(mx-poleX,my-poleY);
       ctx.bezierCurveTo(mx-poleX-spread,my-poleY-spread*1.3+wave,mx+poleX+spread,my-poleY-spread*1.3-wave,mx+poleX,my-poleY);
@@ -564,10 +560,14 @@ function drawField(time){
       if(sd<270*scale){const f=(1-sd/(270*scale))*.035;p.vx+=sdx/sd*f;p.vy+=sdy/sd*f;}
       p.vx+=Math.sin(time*.0004+p.phase)*.008;p.vy+=Math.cos(time*.00035+p.phase)*.008;p.x+=p.vx;p.y+=p.vy;p.vx*=.992;p.vy*=.992;
       if(p.x<0||p.x>width)p.vx*=-.8;if(p.y<0||p.y>height)p.vy*=-.8;
-      const handDistance=Math.hypot(fieldPointer.x-p.x,fieldPointer.y-p.y),a=.2+Math.max(0,1-handDistance/400)*.65;
-      ctx.fillStyle=`rgba(${i%5===0?'218,255,151':'166,231,226'},${a})`;ctx.beginPath();ctx.arc(p.x,p.y,i%9===0?1.8:1,0,Math.PI*2);ctx.fill();
-      if(handDistance<120){ctx.strokeStyle=`rgba(175,245,232,${(1-handDistance/120)*.16})`;ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(fieldPointer.x,fieldPointer.y);ctx.stroke();}
+      p.x=Math.max(0,Math.min(width,p.x));p.y=Math.max(0,Math.min(height,p.y));
     }
+    // Batch 1,800 filings into four paths rather than thousands of individual paints.
+    ctx.lineCap='round';
+    const inks=['rgba(137,211,207,.38)','rgba(172,241,228,.5)','rgba(208,250,217,.62)','rgba(231,255,179,.75)'];
+    for(let group=0;group<4;group++){ctx.beginPath();ctx.strokeStyle=inks[group];ctx.lineWidth=group===3?1.5:1;
+      for(let i=group;i<motes.length;i+=4){const p=motes[i],speed=Math.hypot(p.vx,p.vy)||1,len=2+Math.min(3,speed);ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+p.vx/speed*len,p.y+p.vy/speed*len);}ctx.stroke();}
+    ctx.beginPath();for(let i=0;i<motes.length;i+=19){const p=motes[i];ctx.moveTo(p.x+1.5,p.y);ctx.arc(p.x,p.y,1.5,0,Math.PI*2);}ctx.fillStyle='rgba(216,255,231,.7)';ctx.fill();
   }
   requestAnimationFrame(drawField);
 }
@@ -599,55 +599,7 @@ if(magnetGL){
 }
 function drawMagnet(time){if(magnetGL&&activeScene===fieldScene&&!window.WorldFX.suspendScene)magnetDraw(time);requestAnimationFrame(drawMagnet);}drawMagnet(0);
 
-const lensCanvas=document.querySelector('#lensCanvas'),lens=bindCanvas(lensCanvas),lensScene=document.querySelector('#lensScene');
-const lensState={x:innerWidth*.68,y:innerHeight*.52,tx:innerWidth*.68,ty:innerHeight*.52,r:150};let lensRipples=[],lensSparks=[];
-const cosmicBase=document.createElement('canvas'),cosmicBaseCtx=cosmicBase.getContext('2d');
-function lensPoint(event){const r=lensCanvas.getBoundingClientRect();return{x:event.clientX-r.left,y:event.clientY-r.top};}
-lensCanvas.addEventListener('pointermove',event=>{if(activeScene===lensScene)Object.assign(lensState,{...lensPoint(event),tx:lensPoint(event).x,ty:lensPoint(event).y});});
-lensCanvas.addEventListener('pointerdown',event=>{if(activeScene===lensScene){const p=lensPoint(event);lensRipples.push({x:p.x,y:p.y,r:8,life:1});cosmicBursts.push({x:p.x,y:p.y,r:8,life:1,speed:7});for(let i=0;i<156;i++){const a=Math.random()*Math.PI*2,s=1+Math.random()*9;lensSparks.push({x:p.x,y:p.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.65+Math.random()*.35,size:.7+Math.random()*2.2,hue:Math.random()>.48?195:288});}playPortalSfx();lensCanvas.setPointerCapture(event.pointerId);}});
-let cosmicStars=[],cosmicBrightStars=[],cosmicBursts=[];
-function seedCosmos(w,h){
-  cosmicStars=[];
-  const cx=w*.67,cy=h*.48,arms=4;
-  for(let i=0;i<920;i++){
-    if(i<650){const arm=i%arms,r=Math.pow(Math.random(),.66)*Math.min(w,h)*.62,a=arm*Math.PI*2/arms+r*.012+(Math.random()-.5)*.58;cosmicStars.push({x:cx+Math.cos(a)*r*1.42+(Math.random()-.5)*35,y:cy+Math.sin(a)*r*.57+(Math.random()-.5)*28,z:.24+Math.random()*.76,size:.45+Math.random()*(i%13===0?2.1:1),hue:Math.random()>.76?190+Math.random()*36:Math.random()>.7?285+Math.random()*35:35+Math.random()*28,phase:Math.random()*6.28});}
-    else cosmicStars.push({x:Math.random()*w,y:Math.random()*h,z:.08+Math.random()*.9,size:.35+Math.random()*1.5,hue:Math.random()>.84?195+Math.random()*54:Math.random()>.68?275+Math.random()*38:35+Math.random()*28,phase:Math.random()*6.28});
-  }
-  cosmicBrightStars=cosmicStars.filter(star=>star.size>1.15).slice(0,210);
-  cosmicBase.width=Math.ceil(w);cosmicBase.height=Math.ceil(h);paintCosmosBase(cosmicBaseCtx,w,h);
-}
-function paintCosmosBase(ctx,w,h){
-  const cx=w*.67,cy=h*.47,bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#050610');bg.addColorStop(.42,'#0a1024');bg.addColorStop(.72,'#101126');bg.addColorStop(1,'#04070e');ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
-  ctx.save();ctx.globalCompositeOperation='screen';
-  [[.27,.28,.58,'rgba(87,69,179,.25)'],[.73,.42,.53,'rgba(45,146,188,.2)'],[.52,.83,.48,'rgba(184,69,157,.17)'],[.88,.12,.3,'rgba(67,128,187,.18)']].forEach(([x,y,r,c])=>{const g=ctx.createRadialGradient(w*x,h*y,0,w*x,h*y,Math.max(w,h)*r);g.addColorStop(0,c);g.addColorStop(.36,c.replace(/\.\d+\)/,'.09)'));g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);});
-  const gal=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.min(w,h)*.62);gal.addColorStop(0,'rgba(255,220,177,.86)');gal.addColorStop(.035,'rgba(253,188,208,.54)');gal.addColorStop(.12,'rgba(184,124,225,.26)');gal.addColorStop(.37,'rgba(90,151,227,.12)');gal.addColorStop(1,'rgba(50,123,208,0)');ctx.fillStyle=gal;ctx.beginPath();ctx.ellipse(cx,cy,Math.min(w,h)*.57,Math.min(w,h)*.25,-.27,0,Math.PI*2);ctx.fill();
-  for(let arm=0;arm<4;arm++){ctx.save();ctx.translate(cx,cy);ctx.rotate(arm*Math.PI*.5-.27);ctx.beginPath();for(let i=0;i<=100;i++){const t=i/100,r=8+t*Math.min(w,h)*.54,a=t*5.4,x=Math.cos(a)*r*1.42,y=Math.sin(a)*r*.4;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.strokeStyle=arm%2?'rgba(105,199,255,.15)':'rgba(248,176,218,.13)';ctx.lineWidth=21;ctx.strokeStyle=arm%2?'rgba(105,199,255,.13)':'rgba(248,176,218,.11)';ctx.stroke();ctx.restore();}
-  ctx.restore();
-  cosmicStars.forEach((star,i)=>{ctx.fillStyle=`hsla(${star.hue},88%,${72+(i%4)*4}%,${.4+star.z*.54})`;ctx.beginPath();ctx.arc(star.x,star.y,star.size*(.48+star.z*.45),0,Math.PI*2);ctx.fill();if(star.size>2.25){ctx.strokeStyle=`hsla(${star.hue},90%,88%,.42)`;ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(star.x-star.size*3,star.y);ctx.lineTo(star.x+star.size*3,star.y);ctx.moveTo(star.x,star.y-star.size*3);ctx.lineTo(star.x,star.y+star.size*3);ctx.stroke();}});
-  const glow=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.min(w,h)*.11);glow.addColorStop(0,'rgba(255,234,218,.24)');glow.addColorStop(.35,'rgba(225,169,255,.13)');glow.addColorStop(1,'rgba(120,150,255,0)');ctx.fillStyle=glow;ctx.beginPath();ctx.ellipse(cx,cy,Math.min(w,h)*.24,Math.min(w,h)*.09,-.27,0,Math.PI*2);ctx.fill();
-}
-function drawCosmos(ctx,w,h,time){
-  ctx.drawImage(cosmicBase,0,0,w,h);
-  const cx=w*.67+Math.sin(time*.00012)*w*.012,cy=h*.47+Math.cos(time*.00016)*h*.015;
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  cosmicBrightStars.forEach((star,i)=>{
-    const tw=.42+.58*(.5+.5*Math.sin(time*.0017+star.phase)),dx=star.x-lensState.x,dy=star.y-lensState.y,d=Math.hypot(dx,dy)||1,reach=340*(.55+star.z),pull=Math.max(0,1-d/reach),curl=pull*(pointer.down?.58:.19)*(i%2?1:-1),angle=Math.atan2(dy,dx)+curl,warp=pull*(pointer.down?52:20),x=star.x+Math.cos(angle)*warp,y=star.y+Math.sin(angle)*warp;
-    if(warp>5){ctx.strokeStyle=`hsla(${star.hue},95%,82%,${pull*.38})`;ctx.lineWidth=Math.max(.7,star.size*.48);ctx.beginPath();ctx.moveTo(star.x,star.y);ctx.lineTo(x,y);ctx.stroke();}
-    const radius=star.size*(.6+tw*.6);ctx.fillStyle=`hsla(${star.hue},95%,${72+tw*22}%,${(.34+tw*.58)*star.z})`;ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.fill();
-    if(i%19===0){ctx.strokeStyle=`rgba(234,245,255,${tw*.54})`;ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(x-4*tw,y);ctx.lineTo(x+4*tw,y);ctx.moveTo(x,y-4*tw);ctx.lineTo(x,y+4*tw);ctx.stroke();}
-  });ctx.restore();
-  const pointerGlow=ctx.createRadialGradient(lensState.x,lensState.y,0,lensState.x,lensState.y,190);pointerGlow.addColorStop(0,'rgba(177,224,255,.17)');pointerGlow.addColorStop(.36,'rgba(126,154,255,.08)');pointerGlow.addColorStop(1,'rgba(138,172,255,0)');ctx.fillStyle=pointerGlow;ctx.fillRect(lensState.x-190,lensState.y-190,380,380);
-  cosmicBursts.forEach(b=>{b.r+=b.speed;b.life-=.012;ctx.strokeStyle=`rgba(185,238,255,${b.life*.75})`;ctx.lineWidth=1+b.life*2;ctx.beginPath();ctx.ellipse(b.x,b.y,b.r,b.r*.76,-.25,0,Math.PI*2);ctx.stroke();});cosmicBursts=cosmicBursts.filter(b=>b.life>0);
-  lensRipples.forEach(p=>{p.r+=5;p.life-=.015;ctx.strokeStyle=`rgba(228,207,255,${p.life*.65})`;ctx.lineWidth=2*p.life;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.stroke();});lensRipples=lensRipples.filter(p=>p.life>0);
-  lensSparks.forEach(p=>{const ox=p.x,oy=p.y;p.x+=p.vx;p.y+=p.vy;p.vx*=.986;p.vy*=.986;p.life-=.009;ctx.strokeStyle=`hsla(${p.hue},100%,80%,${p.life*.9})`;ctx.lineWidth=p.size;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(p.x,p.y);ctx.stroke();});lensSparks=lensSparks.filter(p=>p.life>0);
-  ctx.fillStyle='rgba(220,231,255,.76)';ctx.font='10px monospace';ctx.fillText('THE COSMIC SEA / FIELD OF GRAVITY',w*.055,h*.89);
-}
-function drawLens(){
-  const{ctx,width,height}=lens;
-  if(activeScene===lensScene&&!window.WorldFX.suspendScene){ctx.clearRect(0,0,width,height);if(cosmicBase.width!==Math.ceil(width)||cosmicBase.height!==Math.ceil(height))seedCosmos(width,height);lensState.x+=(lensState.tx-lensState.x)*.16;lensState.y+=(lensState.ty-lensState.y)*.16;drawCosmos(ctx,width,height,performance.now());}
-  requestAnimationFrame(drawLens);
-}
-drawLens();
+const lensScene=document.querySelector('#lensScene');
 
 // The site is one room with scene-to-scene camera moves, never a vertical page.
 const chapterLabels=['PROLOGUE / 07','CHAPTER 01 / 07','CHAPTER 02 / 07','CHAPTER 03 / 07','CHAPTER 04 / 07','CHAPTER 05 / 07','CHAPTER 06 / 07','CHAPTER 07 / COSMIC SEA','EPILOGUE / 07'];
@@ -657,8 +609,8 @@ function playChapterGate(index,event,onCovered,direction){
   playPortalSfx();
   window.WorldFX.play(index,event,onCovered,()=>{sceneTransitioning=false;},direction);
 }
-function applyScene(next,oldIndex,index){journey.dataset.direction=index>=oldIndex?'forward':'back';activeScene=next;scenes.forEach(scene=>scene.classList.remove('is-active'));next.classList.remove('scene-arrival');void next.offsetWidth;next.classList.add('is-active');chapterCount.textContent=chapterLabels[index];progress.style.width=`${index/(scenes.length-1)*100}%`;roomCoordinate.textContent=`ROOM ${String(Math.min(index,7)).padStart(2,'0')} / 07`;document.querySelector('#chapterPrev').disabled=index===0;document.querySelector('#chapterNext').disabled=index===scenes.length-1;if(next===fieldScene){fieldPointer.x=pointer.x;fieldPointer.y=pointer.y;}if(next===lensScene){lensState.tx=pointer.x;lensState.ty=pointer.y;}}
-function activateScene(next,animate=true,sourceEvent=null){if(typeof next==='string')next=document.getElementById(next);if(!next||next===activeScene||sceneTransitioning)return;const oldIndex=scenes.indexOf(activeScene),index=scenes.indexOf(next);if(index<0)return;if(animate){sceneTransitioning=true;const gate=()=>playChapterGate(index,sourceEvent,()=>applyScene(next,oldIndex,index),index>=oldIndex?1:-1);if(oldIndex===0&&index>0&&window.HomeWorld){window.HomeWorld.depart().then(gate,gate);}else gate();}else applyScene(next,oldIndex,index);}
+function applyScene(next,oldIndex,index){journey.dataset.direction=index>=oldIndex?'forward':'back';activeScene=next;scenes.forEach(scene=>scene.classList.remove('is-active'));next.classList.remove('scene-arrival');void next.offsetWidth;next.classList.add('is-active');chapterCount.textContent=chapterLabels[index];progress.style.width=`${index/(scenes.length-1)*100}%`;roomCoordinate.textContent=`ROOM ${String(Math.min(index,7)).padStart(2,'0')} / 07`;document.querySelector('#chapterPrev').disabled=index===0;document.querySelector('#chapterNext').disabled=index===scenes.length-1;if(next===fieldScene){fieldPointer.x=pointer.x;fieldPointer.y=pointer.y;}}
+function activateScene(next,animate=true,sourceEvent=null){if(typeof next==='string')next=document.getElementById(next);if(!next||next===activeScene||sceneTransitioning)return;const oldIndex=scenes.indexOf(activeScene),index=scenes.indexOf(next);if(index<0)return;if(animate){sceneTransitioning=true;const gate=()=>playChapterGate(index,sourceEvent,()=>applyScene(next,oldIndex,index),index>=oldIndex?1:-1);if(oldIndex===0&&index>0&&window.HomeWorld){playPortalSfx();window.HomeWorld.depart(()=>applyScene(next,oldIndex,index)).then(()=>{sceneTransitioning=false;},gate);}else gate();}else applyScene(next,oldIndex,index);}
 function moveChapter(delta,event){const index=scenes.indexOf(activeScene);activateScene(scenes[Math.max(0,Math.min(scenes.length-1,index+delta))],true,event);}
 document.querySelectorAll('[data-next]').forEach(button=>button.addEventListener('click',event=>activateScene(button.dataset.next,true,event)));
 document.querySelector('#chapterPrev').disabled=true;
@@ -673,7 +625,7 @@ document.querySelector('#restartButton').addEventListener('click',()=>{
 // Global pointer and cinematic cursor states.
 addEventListener('pointermove',event=>{
   pointer.px=pointer.x;pointer.py=pointer.y;pointer.x=event.clientX;pointer.y=event.clientY;
-  if(activeScene===lensScene){lensState.tx=event.clientX;lensState.ty=event.clientY;}
+  
   if(event.pointerType==='mouse'||event.pointerType==='pen'){
     document.documentElement.classList.add('has-precision-pointer');
     cursor.style.setProperty('--cx',`${pointer.x}px`);cursor.style.setProperty('--cy',`${pointer.y}px`);cursor.classList.add('is-visible');

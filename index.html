@@ -8,14 +8,14 @@
   <meta name="author" content="Pei Ling Hsu">
   <meta name="description" content="AFTERIMAGE by Pei Ling Hsu. Seven interactive worlds shaped by touch, light and motion.">
   <link rel="stylesheet" href="fonts.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=77c4044f6761">
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
   <header class="hud">
     <a class="sigil" href="#threshold" aria-label="Return to beginning">A<span>/</span>I</a>
     <span class="hud-title mono">AFTERIMAGE <i>BY</i> <span class="hud-author">PEI LING HSU</span></span>
-    <div class="hud-right"><span class="chapter-count mono" id="chapterCount">PROLOGUE&nbsp; / &nbsp;07</span><button class="chapter-step" id="chapterPrev" aria-label="Previous chapter">←</button><button class="chapter-step" id="chapterNext" aria-label="Next chapter">→</button><button class="sound-toggle mono" id="soundToggle" aria-pressed="false">SOUND&nbsp; OFF</button><span class="hud-dot"></span></div>
+    <div class="hud-right"><span class="chapter-count mono" id="chapterCount">PROLOGUE&nbsp; / &nbsp;07</span><button class="chapter-step" id="chapterPrev" aria-label="Previous chapter">←</button><button class="chapter-step" id="chapterNext" aria-label="Next chapter">→</button><button class="sound-toggle mono" id="soundToggle" aria-pressed="true">SOUND&nbsp; ON</button><span class="hud-dot"></span></div>
   </header>
   <div class="progress-track"><span id="progress"></span></div>
 
@@ -137,14 +137,14 @@
     </section>
 
     <section class="scene lens-scene" id="lensScene" data-chapter="VII — THE COSMIC SEA" aria-label="A pointer-controlled spiral galaxy">
-      <canvas class="scene-canvas" id="lensCanvas" aria-label="Move to bend the star river; click to release a gravitational burst"></canvas>
+      <div class="scene-canvas cosmic-world" id="cosmicWorld" role="img" aria-label="Move the perspective halo to reveal a three-dimensional galaxy. Hold to look deeper."></div>
       <div class="lens-copy scene-copy">
         <p class="kicker mono">THE EDGE OF WHAT WE KNOW</p>
         <h2>Where the<br><em>dark sings.</em></h2>
-        <p class="scene-description">Drag through the star river.<br>Click to release a gravitational burst.</p>
+        <p class="scene-description">Move the halo. Look into another universe.<br>Hold to drift deeper into the stars.</p>
       </div>
-      <div class="scene-topline mono"><span>07 / THE COSMIC SEA</span><span>MOVE TO BEND SPACE · CLICK TO RELEASE A SUPERNOVA</span></div>
-      <div class="scene-aside mono"><span>SPIRAL ARM / 04</span><span>EVERY STAR FEELS YOUR PASSAGE</span></div>
+      <div class="scene-topline mono"><span>07 / THE COSMIC SEA</span><span>MOVE TO EXPLORE · HOLD TO LOOK DEEPER</span></div>
+      <div class="scene-aside mono"><span>SPIRAL ARM / 04</span><span>A WINDOW INTO THE INFINITE</span></div>
       <button class="next-scene mono" data-next="epilogue">DRIFT BEYOND THE EDGE <b>→</b></button>
     </section>
 
@@ -167,8 +167,8 @@
 
   <a class="music-credit mono" href="music-credits.html" target="_blank" rel="noopener">MUSIC · MEANWHILE / SCOTT BUCKLEY ↗</a>
   <div class="custom-cursor" aria-hidden="true"><i></i><span>DRAG</span></div>
-  <script src="cinematic.js"></script>
-  <script src="app.js"></script>
-  <script src="assets/home-world.js" defer></script>
+  <script src="cinematic.js?v=c46e8efecd67"></script>
+  <script src="app.js?v=5f6fa65c9f5c"></script>
+  <script src="assets/home-world.js?v=a4512a8042f4" defer></script>
 </body>
 </html>
