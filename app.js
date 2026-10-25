@@ -135,7 +135,7 @@ const gravityCanvas = document.querySelector('#gravityCanvas');
 const gravityScene = document.querySelector('#gravityScene');
 const impactReadout = document.querySelector('#collisionCount');
 const gl = gravityCanvas.getContext('webgl', { alpha: true, antialias: true, premultipliedAlpha: false, depth: true });
-let gravityWidth = 1, gravityHeight = 1, gravityDpr = 1, impacts = 0, grabbed = null, dragSample = null;
+let gravityWidth = 1, gravityHeight = 1, gravityDpr = 1, impacts = 0, grabbed = null, dragSample = null, planetPointerId = null;
 const bodies = [], focal = 1050;
 let rebuildFloor=()=>{};
 
@@ -153,12 +153,17 @@ function makeBodies() {
 }
 function resizeGravity() {
   const rect=gravityCanvas.getBoundingClientRect();
+  const oldW=gravityWidth,oldH=gravityHeight;
+  if(Math.round(rect.width)===Math.round(oldW)&&Math.round(rect.height)===Math.round(oldH))return;
   gravityWidth=Math.max(1,rect.width);gravityHeight=Math.max(1,rect.height);
   gravityDpr=Math.min(devicePixelRatio||1,1.55);
   gravityCanvas.width=Math.round(gravityWidth*gravityDpr);gravityCanvas.height=Math.round(gravityHeight*gravityDpr);
   if(gl)gl.viewport(0,0,gravityCanvas.width,gravityCanvas.height);
   rebuildFloor();
-  makeBodies();
+  if(!bodies.length)makeBodies();else{
+    const factor=Math.min(1,gravityWidth/960)/Math.min(1,oldW/960);
+    for(const b of bodies){b.x*=gravityWidth/oldW;b.y*=gravityHeight/oldH;b.r*=factor;}
+  }
 }
 new ResizeObserver(resizeGravity).observe(gravityCanvas.parentElement);resizeGravity();
 function project(body) {
@@ -170,13 +175,17 @@ function canvasPoint(canvas,event) {
   return{x:event.clientX-rect.left,y:event.clientY-rect.top};
 }
 gravityCanvas.addEventListener('pointerdown',event=>{
-  if(activeScene!==gravityScene)return;
+  if(activeScene!==gravityScene||grabbed||event.button>0)return;
   event.preventDefault();
   const p=canvasPoint(gravityCanvas,event);
-  grabbed=[...bodies].sort((a,b)=>a.z-b.z).find(body=>{
-    const q=project(body);return Math.hypot(p.x-q.x,p.y-q.y)<q.r*1.65;
-  })||null;
+  const padding=event.pointerType==='touch'?12:5;
+  const hits=bodies.map(body=>{const q=project(body),distance=Math.hypot(p.x-q.x,p.y-q.y);return{body,q,distance,depth:body.z-Math.sqrt(Math.max(0,body.r*body.r-(distance/q.scale)**2))};});
+  const direct=hits.filter(h=>h.distance<=h.q.r).sort((a,b)=>a.depth-b.depth);
+  const nearby=hits.filter(h=>h.distance<=h.q.r+padding).sort((a,b)=>(a.distance-a.q.r)-(b.distance-b.q.r));
+  const ringHit=hits.find(h=>{if(!h.body.ring)return false;const rx=h.q.r*Math.max(.14,Math.abs(Math.cos(h.body.angle))),r=Math.hypot((p.x-h.q.x)/rx,(p.y-h.q.y)/h.q.r);return r>=1.1&&r<=1.9;});
+  grabbed=(direct[0]||ringHit||nearby[0])?.body||null;
   if(!grabbed)return;
+  planetPointerId=event.pointerId;
   gravityCanvas.classList.add('is-grabbing');
   grabbed.vx=grabbed.vy=grabbed.vz=0;
   const projected=project(grabbed);
@@ -184,7 +193,8 @@ gravityCanvas.addEventListener('pointerdown',event=>{
   gravityCanvas.setPointerCapture(event.pointerId);
 });
 addEventListener('pointermove',event=>{
-  if(!grabbed)return;
+  if(!grabbed||event.pointerId!==planetPointerId)return;
+  event.preventDefault();
   const p=canvasPoint(gravityCanvas,event),now=performance.now(),previousZ=grabbed.z;
   const pointerOffsetY=dragSample?dragSample.offsetY:0,pointerOffsetX=dragSample?dragSample.offsetX:0;
   if(event.shiftKey&&dragSample)grabbed.z=Math.max(-220,Math.min(280,grabbed.z+(p.x-dragSample.x)*1.15));
@@ -198,15 +208,23 @@ addEventListener('pointermove',event=>{
   }
   dragSample={x:p.x,y:p.y,t:now,offsetX:pointerOffsetX,offsetY:pointerOffsetY};
 });
-function releaseBody(){grabbed=null;dragSample=null;gravityCanvas.classList.remove('is-grabbing');}
+function releaseBody(event){
+  if(event?.pointerId!==undefined&&planetPointerId!==null&&event.pointerId!==planetPointerId)return;
+  const id=planetPointerId;
+  if(grabbed){const idle=performance.now()-(dragSample?.t||0)>90;for(const axis of ['vx','vy','vz'])grabbed[axis]=idle?0:Math.max(-22,Math.min(22,grabbed[axis]));}
+  grabbed=null;dragSample=null;planetPointerId=null;gravityCanvas.classList.remove('is-grabbing');
+  if(id!==null&&gravityCanvas.hasPointerCapture(id))gravityCanvas.releasePointerCapture(id);
+}
 addEventListener('pointerup',releaseBody);
 addEventListener('pointercancel',releaseBody);
+gravityCanvas.addEventListener('lostpointercapture',releaseBody);
+addEventListener('blur',()=>releaseBody());
 
 function collide(a,b) {
   const dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,distance=Math.hypot(dx,dy,dz)||1,min=a.r+b.r;
   if(distance>=min)return;
   const nx=dx/distance,ny=dy/distance,nz=dz/distance,overlap=min-distance;
-  const invA=1/(a.r*a.r*a.r),invB=1/(b.r*b.r*b.r),invSum=invA+invB;
+  const invA=a===grabbed?0:1/(a.r*a.r*a.r),invB=b===grabbed?0:1/(b.r*b.r*b.r),invSum=invA+invB;
   if(a!==grabbed){a.x-=nx*overlap*invA/invSum;a.y-=ny*overlap*invA/invSum;a.z-=nz*overlap*invA/invSum;}
   if(b!==grabbed){b.x+=nx*overlap*invB/invSum;b.y+=ny*overlap*invB/invSum;b.z+=nz*overlap*invB/invSum;}
   const relative=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny+(b.vz-a.vz)*nz;
@@ -223,14 +241,14 @@ function collide(a,b) {
 }
 function stepBodies() {
   if(activeScene!==gravityScene)return;
-  const ground=gravityHeight*.24,ceiling=-gravityHeight*.25;
+  const ground=gravityHeight*.24,ceiling=-gravityHeight*.46;
   bodies.forEach(body=>{
     if(body!==grabbed){
       body.vy+=.22;body.x+=body.vx;body.y+=body.vy;body.z+=body.vz;
       body.angle+=.006+Math.hypot(body.vx,body.vy,body.vz)*.0016;
     }
-    if(body.y+body.r>ground){body.y=ground-body.r;if(body.vy>1.1)body.vy=-body.vy*.48;else body.vy=0;body.vx*=.988;body.vz*=.988;}
-    if(body.y-body.r<ceiling){body.y=ceiling+body.r;if(body.vy<0)body.vy=Math.abs(body.vy)*.18;}
+    if(body!==grabbed&&body.y+body.r>ground){body.y=ground-body.r;if(body.vy>1.1)body.vy=-body.vy*.48;else body.vy=0;body.vx*=.988;body.vz*=.988;}
+    if(body!==grabbed&&body.y-body.r<ceiling){body.y=ceiling+body.r;if(body.vy<0)body.vy=Math.abs(body.vy)*.18;}
     const q=project(body);
     body.vx*=.998;body.vz*=.998;
     if(q.x<q.r||q.x>gravityWidth-q.r)body.vx*=-.82;
