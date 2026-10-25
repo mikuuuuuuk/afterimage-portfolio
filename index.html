@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c0d0c">
+  <title>PEI LING HSU — AFTERIMAGE</title>
+  <meta name="author" content="Pei Ling Hsu">
+  <meta name="description" content="AFTERIMAGE by Pei Ling Hsu. Seven interactive worlds shaped by touch, light and motion.">
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="hud">
+    <a class="sigil" href="#threshold" aria-label="Return to beginning">A<span>/</span>I</a>
+    <span class="hud-title mono">AFTERIMAGE <i>BY</i> <span class="hud-author">PEI LING HSU</span></span>
+    <div class="hud-right"><span class="chapter-count mono" id="chapterCount">PROLOGUE&nbsp; / &nbsp;07</span><button class="chapter-step" id="chapterPrev" aria-label="Previous chapter">←</button><button class="chapter-step" id="chapterNext" aria-label="Next chapter">→</button><button class="sound-toggle mono" id="soundToggle" aria-pressed="false">SOUND&nbsp; OFF</button><span class="hud-dot"></span></div>
+  </header>
+  <div class="progress-track"><span id="progress"></span></div>
+
+  <div class="world-architecture" aria-hidden="true">
+    <div class="room-floor"></div><div class="room-portal portal-a"></div><div class="room-portal portal-b"></div>
+    <div class="room-coordinate mono" id="roomCoordinate">ROOM 00 / 07</div>
+  </div>
+
+  <main class="journey" id="journey">
+    <section class="scene threshold is-active" id="threshold" data-chapter="PROLOGUE" aria-label="The threshold">
+      <div id="homeWorld" class="home-world"></div>
+      <div class="threshold-wash"></div>
+      <div class="scene-meta mono"><span>AN EXPERIMENT IN PRESENCE</span><span>VOL. 01&nbsp; / &nbsp;2026</span></div>
+      <div class="threshold-copy">
+        <p class="kicker mono"><span class="live-mark"></span> A SMALL CREATURE. A GREAT UNKNOWN.</p>
+        <h1>A world shaped<br>by your <span class="touch-word"><em>touch.</em><i aria-hidden="true">touch.</i></span></h1>
+        <p class="threshold-intro">A quiet room. A curious little soul.<br>Follow the light into seven unknown worlds.</p>
+        <button class="enter-button" id="enterButton"><span class="enter-ring"><b>↗</b></span><span class="mono">FOLLOW THE LIGHT</span></button>
+      </div>
+      <div class="creator-signature signature-home" tabindex="0" aria-label="A world by Pei Ling Hsu">
+        <span class="signature-eyebrow mono"><i></i> A WORLD BY</span>
+        <p class="signature-name" aria-label="Pei Ling Hsu">PEI LING HSU</p>
+        <span class="signature-rule" aria-hidden="true"></span>
+        <span class="signature-caption mono">TOUCH / LIGHT / MOTION</span>
+      </div>
+      <div class="threshold-foot mono"><span>DRAG TO LOOK AROUND · TOUCH THE LITTLE VOYAGER</span><span>CLICK TO ENTER&nbsp; ↓</span></div>
+    </section>
+
+    <section class="scene fluid-scene" id="fluidScene" data-chapter="I — THE TRACE" aria-label="Fluid field">
+      <canvas class="scene-canvas" id="fluidCanvas" aria-label="Move and hold your pointer to disturb the fluid field"></canvas>
+      <div class="scene-vignette"></div>
+      <div class="scene-topline mono"><span>01 / THE TRACE</span><span>HOLD · MOVE · RELEASE</span></div>
+      <div class="scene-copy fluid-copy">
+        <p class="kicker mono">A SURFACE THAT REMEMBERS</p>
+        <h2 class="ghost-title">Nothing<br>stays <em>still.</em></h2>
+        <h2 class="reveal-title" aria-hidden="true">Nothing<br>stays <em>still.</em></h2>
+        <p class="scene-description">Hold the field. Pull it into a current.<br>Let go and watch the memory dissolve.</p>
+      </div>
+      <div class="scene-aside mono"><span>FIELD STUDY / 001</span><span>YOUR CURSOR IS THE FORCE</span></div>
+      <button class="next-scene mono" data-next="gravityScene">FOLLOW THE CURRENT <b>→</b></button>
+    </section>
+
+    <section class="scene gravity-scene" id="gravityScene" data-chapter="II — THE BODY" aria-label="Three dimensional gravity field">
+      <canvas class="scene-canvas" id="gravityCanvas" aria-label="Drag the planets across the floor and collide them"></canvas>
+      <div class="gravity-glow"></div>
+      <div class="scene-topline mono"><span>02 / THE BODY</span><span>DRAG IN ANY DIRECTION · SHIFT-DRAG FOR DEPTH</span></div>
+      <div class="scene-copy gravity-copy">
+        <p class="kicker mono">MASS / MOMENTUM / 3D COLLISION</p>
+        <h2>Give it<br><em>weight.</em></h2>
+        <p class="scene-description">Pull a planet up, across, or through depth.<br>Release it into the pile. Watch the stack settle.</p>
+      </div>
+      <div class="collision-readout mono"><span>3D GRAVITY / FLOOR + STACK</span><b id="collisionCount">0 IMPACTS</b></div>
+      <button class="next-scene mono" data-next="revealScene">STEP INTO THE ARCHIVE <b>→</b></button>
+    </section>
+
+    <section class="scene reveal-scene" id="revealScene" data-chapter="III — THE OBJECT" aria-label="Layered exhibit reveal">
+      <div class="scene-topline mono"><span>03 / THE OBJECT</span><span>CLICK TO PEEL BACK A LAYER</span></div>
+      <div class="reveal-composition">
+        <div class="object-caption mono"><span>SPECIMEN 03-A</span><span>AN OBJECT IN FOUR MEMORIES</span></div>
+        <div class="object-stage" id="objectStage" role="img" aria-label="A layered glass sculpture. Click to uncover it.">
+          <div class="object-aura"></div>
+          <div class="object-core"><span>AFTER<br>IMAGE</span><i></i></div>
+          <div class="object-shell shell-back"></div>
+          <div class="object-shell shell-mid"></div>
+          <div class="object-shell shell-front"></div>
+          <div class="object-orbit orbit-a"></div><div class="object-orbit orbit-b"></div>
+          <span class="object-index mono">03 — 04</span>
+        </div>
+        <div class="object-copy">
+          <p class="kicker mono">A STUDY IN REVEAL</p>
+          <h2>Look closer.<br><em>Then closer.</em></h2>
+          <p>Some things only appear after the surface moves.</p>
+          <button id="peelButton" class="peel-button mono"><span>UNVEIL LAYER 01</span><b>↗</b></button>
+          <div class="layer-counter mono" id="layerCounter">LAYER 00 / 03</div>
+        </div>
+      </div>
+      <button class="next-scene mono" data-next="clothScene">LEAVE SOMETHING BEHIND <b>→</b></button>
+    </section>
+
+    <section class="scene cloth-scene" id="clothScene" data-chapter="IV — THE HAND" aria-label="Cloth simulation">
+      <canvas class="scene-canvas" id="clothCanvas" aria-label="Grab any point on the cloth and pull"></canvas>
+      <div class="cloth-atmosphere"></div>
+      <div class="scene-topline mono"><span>04 / THE HAND</span><span>GRAB THE FABRIC · PULL · RELEASE</span></div>
+      <div class="scene-copy cloth-copy">
+        <p class="kicker mono">A SOFT BODY IN SPACE</p>
+        <h2>What we<br>touch, <em>moves.</em></h2>
+        <p class="scene-description">Take hold anywhere.<br>The fabric will follow your hand.</p>
+      </div>
+      <div class="cloth-note mono">TENSION / MEMORY / RETURN</div>
+      <button class="next-scene mono" data-next="orbitScene">ENTER THE ORBIT ROOM <b>→</b></button>
+    </section>
+
+    <section class="scene orbit-scene" id="orbitScene" data-chapter="V — THE BLOOM" aria-label="A modeled three dimensional flower">
+      <canvas class="scene-canvas" id="orbitCanvas" aria-label="Drag to turn the flower; click to open and close the petals"></canvas>
+      <div class="scene-vignette"></div>
+      <div class="scene-topline mono"><span>05 / THE BLOOM</span><span>DRAG TO TURN · CLICK TO OPEN</span></div>
+      <div class="scene-copy orbit-copy">
+        <p class="kicker mono">A STUDY IN LAYERS</p>
+        <h2>Let it<br><em>unfold.</em></h2>
+        <p class="scene-description">Turn the bloom in your hand.<br>Click to open and close its petals.</p>
+      </div>
+      <div class="scene-aside mono"><span>PETALS / 036</span><span>THE MODEL TURNS WITH YOU</span></div>
+      <button class="next-scene mono" data-next="fieldScene">ENTER THE MAGNETIC ROOM <b>→</b></button>
+    </section>
+
+    <section class="scene field-scene" id="fieldScene" data-chapter="VI — THE FIELD" aria-label="A magnetic particle field">
+      <canvas class="scene-canvas" id="fieldCanvas" aria-label="Move to attract particles, hold to reverse the field"></canvas>
+      <div class="scene-vignette"></div>
+      <canvas class="magnet-model" id="magnetCanvas" aria-label="A modeled 3D horseshoe magnet"></canvas>
+      <div class="magnet-label magnet-n" aria-hidden="true">N</div><div class="magnet-label magnet-s" aria-hidden="true">S</div>
+      <div class="scene-topline mono"><span>06 / THE MAGNET</span><span>MOVE TO ATTRACT · HOLD TO REPEL</span></div>
+      <div class="scene-copy field-copy">
+        <p class="kicker mono">INVISIBLE FORCES, MADE VISIBLE</p>
+        <h2>Feel the<br><em>invisible.</em></h2>
+        <p class="scene-description">Watch the filings gather around the poles.<br>Move your hand to bend the field.</p>
+      </div>
+      <div class="scene-aside mono"><span>NORTH / SOUTH · ATTRACTION / REPULSION</span><span>THE FIELD ANSWERS YOUR HAND</span></div>
+      <button class="next-scene mono" data-next="lensScene">PASS THROUGH THE GLASS <b>→</b></button>
+    </section>
+
+    <section class="scene lens-scene" id="lensScene" data-chapter="VII — THE COSMIC SEA" aria-label="A pointer-controlled spiral galaxy">
+      <canvas class="scene-canvas" id="lensCanvas" aria-label="Move to bend the star river; click to release a gravitational burst"></canvas>
+      <div class="lens-copy scene-copy">
+        <p class="kicker mono">THE EDGE OF WHAT WE KNOW</p>
+        <h2>Where the<br><em>dark sings.</em></h2>
+        <p class="scene-description">Drag through the star river.<br>Click to release a gravitational burst.</p>
+      </div>
+      <div class="scene-topline mono"><span>07 / THE COSMIC SEA</span><span>MOVE TO BEND SPACE · CLICK TO RELEASE A SUPERNOVA</span></div>
+      <div class="scene-aside mono"><span>SPIRAL ARM / 04</span><span>EVERY STAR FEELS YOUR PASSAGE</span></div>
+      <button class="next-scene mono" data-next="epilogue">DRIFT BEYOND THE EDGE <b>→</b></button>
+    </section>
+
+    <section class="scene epilogue" id="epilogue" data-chapter="EPILOGUE" aria-label="End of experience">
+      <div class="epilogue-glass"></div>
+      <div class="scene-topline mono"><span>END OF TAKE</span><span>THE SPACE REMAINS</span></div>
+      <div class="epilogue-copy">
+        <p class="kicker mono">AFTERIMAGE / 2026</p>
+        <h2>The end<br>is another <em>beginning.</em></h2>
+        <div class="creator-signature signature-end" tabindex="0" aria-label="An interactive world by Pei Ling Hsu">
+          <span class="signature-eyebrow mono"><i></i> AN INTERACTIVE WORLD BY</span>
+          <p class="signature-name" aria-label="Pei Ling Hsu">PEI LING HSU</p>
+          <span class="signature-rule" aria-hidden="true"></span>
+        </div>
+        <button class="restart-button mono" id="restartButton">RETURN TO THE THRESHOLD&nbsp; ↗</button>
+      </div>
+      <div class="epilogue-foot mono"><span>PEI LING HSU / AFTERIMAGE / 2026</span><span>THANK YOU FOR LEAVING A TRACE</span></div>
+    </section>
+  </main>
+
+  <a class="music-credit mono" href="music-credits.html" target="_blank" rel="noopener">MUSIC · MEANWHILE / SCOTT BUCKLEY ↗</a>
+  <div class="custom-cursor" aria-hidden="true"><i></i><span>DRAG</span></div>
+  <script src="cinematic.js"></script>
+  <script src="app.js"></script>
+  <script src="assets/home-world.js" defer></script>
+</body>
+</html>
