@@ -247,7 +247,7 @@
       root.style.setProperty('--cinema-color',palettes[index]||palettes[0]);root.classList.add('is-running');
       document.documentElement.classList.add('cinema-running');
       const origin={x:((event?.clientX??innerWidth*.5)/innerWidth-.5)*2,y:(.5-(event?.clientY??innerHeight*.5)/innerHeight)*2};
-      let elapsed=0,lastTime=performance.now(),swapped=false;const duration=reduced.matches?650:2450;
+      let elapsed=0,lastTime=performance.now(),swapped=false,resumed=false;const duration=reduced.matches?650:2450;
       const frame=now=>{
         const delta=now-lastTime;lastTime=now;
         if(document.hidden){requestAnimationFrame(frame);return;}
@@ -260,6 +260,7 @@
         caption.style.opacity=String(smooth(.26,.4,p)*(1-smooth(.62,.78,p)));
         if(!reduced.matches)render(index,p,origin,direction);
         if(p>=.45&&!swapped){swapped=true;onCovered();}
+        if(p>=.62&&!resumed){resumed=true;window.dispatchEvent(new Event('worldfx-resume'));}
         if(p<1)requestAnimationFrame(frame);
         else{root.classList.remove('is-running');document.documentElement.classList.remove('cinema-running');busy=false;onDone();}
       };

@@ -189,3 +189,15 @@ button.is-pressed{transform:scale(.965);transition-duration:.08s}.chapter-step,.
   .threshold .threshold-copy{top:93px}.threshold h1{font-size:8.8vw}.threshold-intro{display:none}.threshold .threshold-copy .kicker{margin-bottom:9px}.threshold .signature-home{bottom:35px}.threshold .home-story{display:none}
   .lens-scene .lens-copy{top:103px}.lens-scene .scene-description{display:none}
 }
+/* WebKit: flat page compositor; depth is rendered inside WebGL, not on its ancestors. */
+.journey{perspective:none;transform-style:flat}
+.cinema-ready .scene{filter:none;transform:none;backface-visibility:visible}
+@media(pointer:coarse){
+  .scene,.scene.is-active{transform:none!important;filter:none!important;transition:none!important;animation:none!important}
+  .scene:not(.is-active){visibility:hidden;opacity:0}.scene.is-active{visibility:visible;opacity:1}
+  .hud,button,.enter-ring,.object-core,.object-shell{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  button,.enter-ring{background-color:#27373eaa!important}
+  .home-world,.cosmic-world{contain:layout}
+  .lens-scene .lens-copy{top:100px;max-width:70vw;opacity:.82}
+  .lens-scene .lens-copy h2{font-size:8vw}.lens-scene .scene-description{display:none}
+}
